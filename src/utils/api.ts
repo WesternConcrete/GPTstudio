@@ -16,6 +16,17 @@ const getBaseUrl = () => {
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
 
+const TRANSFORMER = superjson;
+
+TRANSFORMER.registerCustom<Buffer, number[]>(
+  {
+    isApplicable: (v): v is Buffer => v instanceof Buffer,
+    serialize: (v) => [...v],
+    deserialize: (v) => Buffer.from(v),
+  },
+  "buffer"
+);
+
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
@@ -25,7 +36,7 @@ export const api = createTRPCNext<AppRouter>({
        *
        * @see https://trpc.io/docs/data-transformers
        */
-      transformer: superjson,
+      transformer: TRANSFORMER,
 
       /**
        * Links used to determine request flow from client to server.

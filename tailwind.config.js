@@ -31,14 +31,22 @@ module.exports = {
         dark: {
           gray: "var(--dark-gray)"
         },
+        nav: {
+          background: "var(--nav-background)"
+        },
+        hover: {
+          pink: "var(--hover-pink)",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          pink: "var(--primary-pink)"
+          pink: "var(--primary-pink)",
+          input: "var(--primary-input)"
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          input: "var(--secondary-input)"
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -85,5 +93,7 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+  ],
 }

@@ -17,6 +17,12 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ['images.clerk.dev', 'oaidalleapiprodscus.blob.core.windows.net'],
+  },
+  experimental: {
+    esmExternals: false, // react-dropzone / uploadThing.com
+  },
 };
 
 export default config;

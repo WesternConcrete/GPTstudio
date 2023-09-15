@@ -1,23 +1,21 @@
-import { ReactNode, useEffect, useState } from "react"
-import { MainNav } from "./nav/main-nav"
-import { useAuth } from "@clerk/nextjs"
-import Home from "@/pages"
+import { type ReactNode } from "react";
+import { MainNav } from "./nav/main-nav";
+import { useAuth } from "@clerk/nextjs";
+import LandingPage from "@/pages";
 
 type Props = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
 export const Layout = ({ children }: Props) => {
-  const { userId } = useAuth()
-  
+  const { userId } = useAuth();
+
   return (
     <>
-      <div className="bg-background min-h-screen max-w-screen">
-        <MainNav/>
-        {
-          <div className="px-12 overflow-x-hidden">{userId? children: <Home/> }</div> 
-        }
+      <div className="max-w-screen min-h-screen bg-background">
+        <MainNav />
+        {<div className="h-full">{userId ? children : <LandingPage />}</div>}
       </div>
     </>
-  )
-}
+  );
+};

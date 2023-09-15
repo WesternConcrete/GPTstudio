@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const Spinner = React.forwardRef<
   HTMLDivElement,
@@ -16,7 +16,7 @@ const Spinner = React.forwardRef<
     <div role="status">
       <svg
         aria-hidden="true"
-        className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary-pink"
+        className="h-8 w-8 animate-spin fill-primary-pink text-light-gray"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@ const Spinner = React.forwardRef<
       <span className="sr-only">Loading...</span>
     </div>
   </div>
-))
-Spinner.displayName = "Spinner"
+));
+Spinner.displayName = "Spinner";
 
-export { Spinner }
+export { Spinner };
