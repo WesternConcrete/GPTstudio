@@ -19,11 +19,12 @@ import { useTheme } from "next-themes";
 interface NavigationItem {
   name: string;
   href: string;
+  icon: JSX.Element;
 }
 
 const NAVIGATION_OPTIONS: NavigationItem[] = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Marketplace", href: "/marketplace" },
+  { name: "Dashboard", href: "/dashboard", icon: <></> },
+  { name: "Marketplace", href: "/marketplace", icon: <></> },
 ];
 
 interface HighlightBarSize {
@@ -153,13 +154,13 @@ export const MainNav = () => {
               ) : (
                 <DropdownMenuItem onClick={() => openSignIn()}>
                   <SignInButton mode="modal">
-                    <> <User className="mr-2 h-4 w-4" />
-                    <span>Sign in</span></>
-                 
+                    <>
+                      {" "}
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Sign in</span>
+                    </>
                   </SignInButton>
-                    
-                  </DropdownMenuItem>
-                
+                </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

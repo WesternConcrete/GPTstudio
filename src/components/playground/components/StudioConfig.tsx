@@ -12,8 +12,25 @@ import {
 import { ArtStyle } from "@/interfaces/design-studio";
 import { ButtonSpinner } from "@/components/ui/button-spinner";
 import { MaxLengthSelector } from "./maxlength-selector";
-import { ArrowLeftFromLine, ChevronLeftIcon, Edit, Edit2, Edit3, Eraser, LassoSelect, Pen, X } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  ArrowLeftFromLine,
+  ChevronLeftIcon,
+  Edit,
+  Edit2,
+  Edit3,
+  Eraser,
+  LassoSelect,
+  Pen,
+  X,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   selectedStyle: string;
@@ -90,24 +107,42 @@ export default function StudioConfig({
       <MaxLengthSelector setValue={setImageCount} value={imageCount} />
       <Separator />
       <div className="grid gap-2 pt-2">
-      <div className="flex justify-between items-center h-8">
-        <Label htmlFor="model">Inspiration (optional)</Label>
-        {selectedImage.url ?   <DropdownMenu>
-  <DropdownMenuTrigger asChild><Button className="w-[80px] h-full text-xs" size={'sm'} variant={'ghost'}>
-          Edit
-          <Edit className="h-3 w-3 ml-2" />
-</Button></DropdownMenuTrigger>
-  <DropdownMenuContent>
-    {!isSelectedImageFocused ? <DropdownMenuItem onClick={() => setIsSelectedImageFocused(true)} ><Eraser className="mr-2 h-4 w-4" />
-                  <span>Mask</span></DropdownMenuItem> : <></>} 
-    <DropdownMenuItem onClick={clearSelectedImage} ><X className="mr-2 h-4 w-4" />
-                  <span>Clear</span></DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>:<></>}
-       
-        
+        <div className="flex h-8 items-center justify-between">
+          <Label htmlFor="model">Inspiration (optional)</Label>
+          {selectedImage.url ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="h-full w-[80px] text-xs"
+                  size={"sm"}
+                  variant={"ghost"}
+                >
+                  Edit
+                  <Edit className="ml-2 h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {!isSelectedImageFocused ? (
+                  <DropdownMenuItem
+                    onClick={() => setIsSelectedImageFocused(true)}
+                  >
+                    <Eraser className="mr-2 h-4 w-4" />
+                    <span>Mask</span>
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                <DropdownMenuItem onClick={clearSelectedImage}>
+                  <X className="mr-2 h-4 w-4" />
+                  <span>Clear</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <></>
+          )}
         </div>
-      
+
         <div className="flex w-full items-center justify-center">
           <label
             htmlFor="dropzone-file"
@@ -151,24 +186,21 @@ export default function StudioConfig({
                   and drop
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  PNG, JPG, JPEG{" "}
+                  PNG only
                 </p>
               </div>
             )}
 
-            
-
             <input
               id="dropzone-file"
               type="file"
-              accept="image/png, image/jpeg"
+              accept="image/png"
               className="hidden"
               onChange={onImageChange}
             />
           </label>
         </div>
       </div>
-      
     </div>
   );
 }

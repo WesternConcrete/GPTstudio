@@ -8,6 +8,7 @@ import Image from "next/image";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  Info,
   LassoSelect,
   Printer,
   Wand2,
@@ -29,9 +30,31 @@ import TypingPlaceholderTextarea from "./components/typing-placeholder-textarea-
 import StudioConfig from "./components/StudioConfig";
 import { FileEndpoints } from "@/server/api/upload-thing";
 import { MaskEditor, toMask } from "react-mask-editor";
-import { MaskedImageHandles, MaskedImage } from "./components/masked-image";
+import {
+  type MaskedImageHandles,
+  MaskedImage,
+} from "./components/masked-image";
 
 export default function PlaygroundPage() {
+  const placeholders = [
+    "A watercolor of a cityscape under a neon-green sky.",
+    "A Picasso-esque depiction of a robot playing the violin.",
+    "A surrealist painting of fish swimming in a floating fishbowl above a desert.",
+    "A charcoal sketch of an astronaut dancing on the moon with an alien.",
+    "A Van Gogh inspired image of a digital metropolis at night.",
+    "A photo of a parrot with peacock tail feathers perched on a vintage telephone.",
+    "A Renaissance style portrait of a mermaid reading a book.",
+    "A cubist painting of a neon-lit Tokyo street in the rain.",
+    "A chalk drawing of a dragon and a unicorn playing chess on a cloud.",
+    "An impressionist painting of a futuristic train station with floating platforms.",
+    "A photo of a chameleon blending into a bouquet of colorful flowers.",
+    "A Banksy-style graffiti of a robot holding a 'Humans Welcome' sign.",
+    "A Dali-inspired surreal painting of melting clocks on a digital landscape.",
+    "A manga-style drawing of a samurai battling a giant mechanical spider.",
+    "A photo of a golden retriever wearing a Sherlock Holmes detective hat and pipe.",
+    "A Gothic painting of a haunted mansion with ghostly figures dancing in its ballroom.",
+  ];
+
   const [browserLoadedImages, setBrowserLoadedImages] = useState(
     new Set<string>()
   ); // set to track if the browser has loaded the image using onLoaded
@@ -45,7 +68,7 @@ export default function PlaygroundPage() {
   const [imageCount, setImageCount] = useState(3);
   const [lassoOn, setToggleLasso] = useState(false);
   const [generatingImages, setGeneratingImages] = useState(true);
-  const [showGeneratingImagesProgressBar, setShowGeneratingImagesProgressBar] =
+  const [hideGeneratingImagesProgressBar, setHideGeneratingImagesProgressBar] =
     useState(true);
   const [uploadProgressPercent, setUploadProgressPercent] = useState(0);
   const [loadingInspoImage, setLoadingInspoImage] = useState(true);
@@ -56,14 +79,20 @@ export default function PlaygroundPage() {
   const progress = useProgressBar(generatingImages);
   const { startUpload } = useUploadThing(FileEndpoints.variationImage);
   const maskedImageRef = useRef<MaskedImageHandles>(null);
+  const [hasMask, setHasMask] = useState(false);
 
-
+  const setToggleLassoWrapper = (toggleLasso: boolean) => {
+    if (!toggleLasso) {
+      setHasMask(false);
+    }
+    setToggleLasso(toggleLasso);
+  };
 
   const lassoDisabled = !isSelectedImageFocused;
 
   useEffect(() => {
     if (progress === 100) {
-      setTimeout(() => setShowGeneratingImagesProgressBar(true), 1400);
+      setTimeout(() => setHideGeneratingImagesProgressBar(true), 1400);
     }
   }, [progress]);
 
@@ -78,7 +107,7 @@ export default function PlaygroundPage() {
           url: URL.createObjectURL(file),
         };
       });
-      setIsSelectedImageFocused(true)
+      setIsSelectedImageFocused(true);
     }
   };
 
@@ -127,7 +156,7 @@ export default function PlaygroundPage() {
         variant: "destructive",
       });
       setGeneratingImages(false);
-      setShowGeneratingImagesProgressBar(false);
+      setHideGeneratingImagesProgressBar(false);
       setUploadProgressPercent(0);
       setIsSelectedImageFocused(true);
     },
@@ -166,13 +195,14 @@ export default function PlaygroundPage() {
   };
 
   const handleExtractMask = async (): Promise<Blob> => {
-    return await maskedImageRef.current?.extractMaskAsPNG() as unknown as Blob;
+    return (await maskedImageRef.current?.extractMaskAsPNG()) as unknown as Blob;
   };
 
   const clearImageLoadUI = () => {
-    setShowGeneratingImagesProgressBar(false);
+    setHideGeneratingImagesProgressBar(false);
     setGeneratingImages(true);
     setUploadProgressPercent(0);
+    setToggleLassoWrapper(false);
     setIsSelectedImageFocused(false);
   };
 
@@ -189,14 +219,12 @@ export default function PlaygroundPage() {
   };
 
   const formatPrompt = (input: string, style: string): string => {
-    if (style !== "Other") {
-      // TODO: Use regex to slice out the specified strings if present.
-      return `${input} - Make sure this is in the form of a ${style}`;
-    }
+    // if (style !== "Other") {
+    //   // TODO: Use regex to slice out the specified strings if present.
+    //   return `${input} - Make sure this is in the form of a ${style}`;
+    // }
     return input;
   };
-
-
 
   /**
    * Initiates the image generation request.
@@ -204,10 +232,10 @@ export default function PlaygroundPage() {
   const requestImageGeneration = async (
     prompt: string,
     imageUrl: string | undefined,
-    maskUrl: string | undefined,
+    maskUrl: string | undefined
   ) => {
     setBrowserLoadedImages(new Set<string>());
-    
+
     await dallePromptQuery.mutateAsync({
       prompt: prompt,
       n: imageCount,
@@ -217,58 +245,47 @@ export default function PlaygroundPage() {
     });
   };
 
-  const handleMaskExtracted = (file: File) => {
-    console.log('Received mask file in parent component:', file);
-    // Do whatever you want with the file here, e.g., startUpload
-  }
-
-    /**
+  /**
    * Get the URL for the image either by uploading the current file or using a provided URL.
    */
-    const getImageUrl = async (): Promise<string | undefined> => {
-      if (selectedImage.file && selectedImage.url) {
-        const uploadFileResponse = await startUpload([
-          selectedImage.file,
-        ])!;
-        return (uploadFileResponse![0]!).url;
-      } else if (!selectedImage.file && selectedImage.url) {
-        const url = await saveDalleUrlMutation.mutateAsync({
-          url: selectedImage.url,
-        });
-        if (url) {
-          const response = await fetch(url);
-          const data = await response.blob();
-          const metadata = {
-            type: "image/png",
-          };
-          setSelectedImage((prev) => ({
-            ...prev,
-            file: new File([data], "test.jpg", metadata),
-          }));
-        }
-  
-        return url;
+  const getImageUrl = async (): Promise<string | undefined> => {
+    if (selectedImage.file && selectedImage.url) {
+      const uploadFileResponse = await startUpload([selectedImage.file])!;
+      return uploadFileResponse![0]!.url;
+    } else if (!selectedImage.file && selectedImage.url) {
+      const url = await saveDalleUrlMutation.mutateAsync({
+        url: selectedImage.url,
+      });
+      if (url) {
+        const response = await fetch(url);
+        const data = await response.blob();
+        const metadata = {
+          type: "image/png",
+        };
+        setSelectedImage((prev) => ({
+          ...prev,
+          file: new File([data], "test.jpg", metadata),
+        }));
       }
-    };
+
+      return url;
+    }
+  };
 
   const generateMaskUrl = async () => {
-    
-    if(lassoOn && selectedImage.url && isSelectedImageFocused) {
-      const maskBlob = await handleExtractMask() ;
-      const maskFile = new File([maskBlob], "mask.png", {type: "image/png"});
+    if (lassoOn && selectedImage.url && isSelectedImageFocused) {
+      const maskBlob = await handleExtractMask();
+      const maskFile = new File([maskBlob], "mask.png", { type: "image/png" });
 
-      if(maskFile) {
-        const uploadFileResponse = await startUpload([
-          maskFile,
-        ])!;
-        return (uploadFileResponse![0]!).url;
+      if (maskFile) {
+        const uploadFileResponse = await startUpload([maskFile])!;
+        return uploadFileResponse![0]!.url;
       } else {
-        return undefined
+        return undefined;
       }
-      
     }
-    return undefined
-  }
+    return undefined;
+  };
 
   const handleGenerateImages = async () => {
     // Initialize the URL variable.
@@ -286,18 +303,14 @@ export default function PlaygroundPage() {
     // // Get the URL for the image.
     url = await getImageUrl();
 
-
     // Initiate the image generation request.
     await requestImageGeneration(formattedPrompt, url, masked_url);
   };
 
-
-
-
   let widthClass = "";
 
   if (isSelectedImageFocused) {
-    widthClass = "w-2/5"; // 80% instead of 100%
+    widthClass = "w-4/5"; // 60% instead of 100%
   } else {
     switch ((pastGenerations[generationIndex] as { url: string }[]).length) {
       case 1:
@@ -317,9 +330,16 @@ export default function PlaygroundPage() {
     }
   }
 
+  const isPromptInputDisabled =
+    !hideGeneratingImagesProgressBar || (isSelectedImageFocused && !hasMask);
+  const isGeneratingVariations = selectedImage.url && !hasMask;
+  const isPromptButtonDisabled =
+    !hideGeneratingImagesProgressBar ||
+    (promptInput.trim().length === 0 && !selectedImage.url);
+
   return (
     <>
-      <div className="h-[calc(100vh-73px)] rounded-[0.5rem] shadow md:flex">
+      <div className="h-screen rounded-[0.5rem] shadow md:flex">
         <div className="flex-1">
           <div className="h-full">
             <div className="grid h-full items-stretch md:grid-cols-[330px_min-content_1fr]">
@@ -338,13 +358,13 @@ export default function PlaygroundPage() {
                   {((pastGenerations[generationIndex] as { url: string }[])
                     .length === 0 &&
                     !isSelectedImageFocused) ||
-                  !showGeneratingImagesProgressBar ? (
+                  !hideGeneratingImagesProgressBar ? (
                     <div
                       className={`align-center flex flex-col justify-center text-center text-sm text-dark-gray transition-opacity duration-1000 ${
                         progress >= 100 ? "opacity-0" : ""
                       }`}
                     >
-                      {!showGeneratingImagesProgressBar ? (
+                      {!hideGeneratingImagesProgressBar ? (
                         <>
                           <p className="mb-4">Generating images...</p>
                           <Progress
@@ -364,8 +384,7 @@ export default function PlaygroundPage() {
                   ) : isSelectedImageFocused ? (
                     <>
                       <div className={widthClass}>
-
-                        { !lassoOn ? 
+                        {!lassoOn ? (
                           <Image
                             width={110} // You can adjust or remove these if you're relying on container width
                             height={110}
@@ -373,18 +392,19 @@ export default function PlaygroundPage() {
                             className={`h-auto w-full  rounded-md`} // Ensure the image takes the full width of its container
                             alt={"image"}
                             objectFit="cover"
-                          /> : 
-
+                          />
+                        ) : (
                           <>
-<div className="w-full h-full select-none">
-  
-        <MaskedImage ref={maskedImageRef} src={selectedImage.url} objectFit="contain" />
-                        </div>
+                            <div className="h-full w-full select-none">
+                              <MaskedImage
+                                ref={maskedImageRef}
+                                src={selectedImage.url}
+                                objectFit="contain"
+                                setHasMask={setHasMask}
+                              />
+                            </div>
                           </>
-                          
-                          
-                        }
-                        
+                        )}
                       </div>
                     </>
                   ) : (
@@ -445,7 +465,7 @@ export default function PlaygroundPage() {
                       <Button
                         variant={null}
                         disabled={lassoDisabled}
-                        onClick={() => setToggleLasso(!lassoOn)}
+                        onClick={() => setToggleLassoWrapper(!lassoOn)}
                         className={`h-8 w-8 p-0 ${
                           lassoOn
                             ? "bg-primary-pink text-white hover:bg-opacity-70 hover:text-white"
@@ -475,7 +495,10 @@ export default function PlaygroundPage() {
                       <div className="flex h-5 items-center space-x-4">
                         <Button
                           variant="ghost"
-                          onClick={() => {setIsSelectedImageFocused(false); setToggleLasso(false);}}
+                          onClick={() => {
+                            setIsSelectedImageFocused(false);
+                            setToggleLassoWrapper(false);
+                          }}
                           className="lg:flex"
                         >
                           <X className="mr-2 h-4 w-4" />
@@ -492,24 +515,35 @@ export default function PlaygroundPage() {
                         <div className="flex flex-col space-y-2">
                           <Label htmlFor="instructions">Prompt</Label>
                           <div className="flex w-full items-center space-x-2">
-                            <TypingPlaceholderTextarea
-                              promptInput={promptInput}
-                              setPromptInput={setPromptInput}
-                            />
+                            <div className="w-full">
+                              {isGeneratingVariations ? (
+                                <div className="flex h-[80px] h-full w-full items-center justify-center rounded border border-border p-4 text-medium-gray">
+                                  <Info className="mr-2 h-4 w-4" />
+                                  <span>
+                                    Generate variations OR draw a mask to edit
+                                    the image
+                                  </span>
+                                </div>
+                              ) : (
+                                <TypingPlaceholderTextarea
+                                  promptInput={promptInput}
+                                  setPromptInput={setPromptInput}
+                                  disabled={isPromptInputDisabled}
+                                  placeholders={placeholders}
+                                />
+                              )}
+                            </div>
+
                             <TooltipProvider>
                               <Tooltip delayDuration={0}>
                                 <TooltipTrigger className="h-full" asChild>
                                   <Button
                                     type="submit"
                                     className="primary-button h-full w-[90px]"
-                                    disabled={
-                                      !showGeneratingImagesProgressBar ||
-                                      (promptInput.trim().length === 0 &&
-                                        !selectedImage.url)
-                                    }
+                                    disabled={isPromptButtonDisabled}
                                     onClick={handleGenerateImages}
                                   >
-                                    {!showGeneratingImagesProgressBar ? (
+                                    {!hideGeneratingImagesProgressBar ? (
                                       <ButtonSpinner size={2} />
                                     ) : (
                                       <Wand2 size={30} />
@@ -530,18 +564,18 @@ export default function PlaygroundPage() {
               </div>
               <Separator orientation="vertical" className="md:order-2" />
               <StudioConfig
-                  selectedStyle={selectedStyle}
-                  setSelectedStyle={setSelectedStyle}
-                  imageCount={imageCount}
-                  setImageCount={setImageCount}
-                  selectedImage={selectedImage}
-                  onImageChange={onImageChange}
-                  loadingInspoImage={loadingInspoImage}
-                  setLoadingInspoImage={setLoadingInspoImage}
-                  isSelectedImageFocused={isSelectedImageFocused}
-                  setIsSelectedImageFocused={setIsSelectedImageFocused}
-                  clearSelectedImage={clearSelectedImage}
-                />
+                selectedStyle={selectedStyle}
+                setSelectedStyle={setSelectedStyle}
+                imageCount={imageCount}
+                setImageCount={setImageCount}
+                selectedImage={selectedImage}
+                onImageChange={onImageChange}
+                loadingInspoImage={loadingInspoImage}
+                setLoadingInspoImage={setLoadingInspoImage}
+                isSelectedImageFocused={isSelectedImageFocused}
+                setIsSelectedImageFocused={setIsSelectedImageFocused}
+                clearSelectedImage={clearSelectedImage}
+              />
             </div>
           </div>
         </div>
