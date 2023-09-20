@@ -44,9 +44,9 @@ interface SideNavProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const NAVIGATION_OPTIONS: NavigationItem[] = [
-  { name: "Dashboard", href: "dashboard", icon: LayoutDashboard },
+  { name: "Design Studio", href: "studio", icon: PaintBucket },
+  { name: "My Gallery", href: "gallery", icon: LayoutDashboard },
   { name: "Marketplace", href: "marketplace", icon: Store },
-  { name: "Studio", href: "studio", icon: PaintBucket },
 ];
 
 export function SideNav({
@@ -97,14 +97,14 @@ export function SideNav({
                     <TooltipTrigger asChild>
                       <Button
                         onClick={() => router.push(`/${option.href}`)}
-                        variant="ghost"
-                        className={`w-full gap-3 ${
+                        variant={"ghost"}
+                        className={`w-full gap-3 whitespace-nowrap ${
                           isCollapsed
                             ? "justify-center px-2"
                             : "justify-start gap-3"
                         } hover:bg-accent hover:text-accent-foreground ${
                           activeRoute === option.href
-                            ? "bg-primary-pink text-white hover:bg-primary-pink"
+                            ? "bg-primary-pink text-white hover:bg-primary-pink hover:text-white"
                             : ""
                         }`}
                       >

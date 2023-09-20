@@ -67,9 +67,8 @@ export default function StudioConfig({
   ];
 
   return (
-    <div className="hidden flex-col space-y-4 px-10 pt-8 sm:flex md:order-1">
-      <h2 className="whitespace-nowrap pb-4 text-lg font-semibold">
-        Design Studio
+    <div className="hidden flex-col space-y-4 p-8 sm:flex md:order-1">
+     <h2 className="text-3xl font-bold tracking-tight">Design Studio
       </h2>
       <div className="grid gap-4">
         <Label htmlFor="model">Image Type</Label>
