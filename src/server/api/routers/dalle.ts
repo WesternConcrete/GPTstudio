@@ -21,10 +21,10 @@ export const dalle = createTRPCRouter({
       if (mask_url && image_url) {
         console.log("edit");
         const response = await openai.images.edit({
-          image: (await fetch(image_url)) as any,
+          image: await fetch(image_url),
           n,
           size,
-          mask: (await fetch(mask_url)) as any,
+          mask: await fetch(mask_url),
           prompt,
         });
 
@@ -32,7 +32,7 @@ export const dalle = createTRPCRouter({
       } else if (image_url) {
         console.log("createVariation");
         const response = await openai.images.createVariation({
-          image: (await fetch(image_url)) as any,
+          image: await fetch(image_url),
           n,
           size,
         });

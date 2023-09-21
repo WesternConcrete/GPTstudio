@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface Props {
-  selectedStyle: string;
+  selectedStyle: ArtStyle;
   setSelectedStyle: Dispatch<SetStateAction<ArtStyle>>;
   imageCount: number;
   setImageCount: (count: number) => void;
@@ -68,8 +68,7 @@ export default function StudioConfig({
 
   return (
     <div className="hidden flex-col space-y-4 p-8 sm:flex md:order-1">
-     <h2 className="text-3xl font-bold tracking-tight">Design Studio
-      </h2>
+      <h2 className="text-3xl font-bold tracking-tight">Design Studio</h2>
       <div className="grid gap-4">
         <Label htmlFor="model">Image Type</Label>
         <div className="flex flex-wrap items-center justify-center gap-4">

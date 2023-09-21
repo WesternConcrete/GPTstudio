@@ -18,7 +18,7 @@ export interface MaskedImageHandles {
   extractMaskAsPNG: () => void;
 }
 
-export const MaskedImage = forwardRef<MaskedImageHandles, ImageMaskProps>(
+const MaskedImage = forwardRef<MaskedImageHandles, ImageMaskProps>(
   ({ src, alt, objectFit, setHasMask }, ref) => {
     const [imageDimensions, setImageDimensions] = useState<{
       width: number;
@@ -228,3 +228,7 @@ export const MaskedImage = forwardRef<MaskedImageHandles, ImageMaskProps>(
     );
   }
 );
+
+MaskedImage.displayName = "MaskedImage";
+
+export { MaskedImage };

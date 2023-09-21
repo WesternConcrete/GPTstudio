@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from "react";
-import { MainNav } from "./nav/main-nav";
 import { useAuth } from "@clerk/nextjs";
 import LandingPage from "@/pages";
 import { SideNav } from "./nav/side-nav";

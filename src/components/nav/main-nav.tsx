@@ -144,7 +144,7 @@ export const MainNav = () => {
               </DropdownMenuItem>
               {user.isSignedIn ? (
                 <DropdownMenuItem
-                  onClick={() => {
+                  onClick={async () => {
                     signOut();
                   }}
                 >

@@ -43,7 +43,8 @@ export default function StudioConfig({
           <DialogHeader>
             <DialogTitle>Save draft</DialogTitle>
             <DialogDescription>
-              This image will be saved in "My Gallery" for future access.
+              This image will be saved in &quot;My Gallery&quot; for future
+              access.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -95,8 +96,8 @@ export default function StudioConfig({
           <DialogHeader>
             <DialogTitle>Publish</DialogTitle>
             <DialogDescription>
-              Clicking "Publish" will save this draft and bring you to the
-              canvas selection page.
+              Clicking &quot;Publish&quot; will save this draft and bring you to
+              the canvas selection page.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

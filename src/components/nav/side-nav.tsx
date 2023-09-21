@@ -92,11 +92,13 @@ export function SideNav({
           <div className={`space-y-3`}>
             {NAVIGATION_OPTIONS.map((option) => {
               return (
-                <TooltipProvider>
+                <TooltipProvider key={option.name}>
                   <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                       <Button
-                        onClick={() => router.push(`/${option.href}`)}
+                        onClick={() => {
+                          router.push(`/${option.href}`);
+                        }}
                         variant={"ghost"}
                         className={`w-full gap-3 whitespace-nowrap ${
                           isCollapsed
@@ -214,7 +216,7 @@ export function SideNav({
           </DropdownMenuItem>
           {user.isSignedIn ? (
             <DropdownMenuItem
-              onClick={() => {
+              onClick={async () => {
                 signOut();
               }}
             >

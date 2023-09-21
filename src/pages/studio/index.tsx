@@ -114,8 +114,6 @@ export default function PlaygroundPage() {
   // Methods and Handlers
   function useProgressBar(generatingImages: boolean) {
     useEffect(() => {
-      let interval: NodeJS.Timeout;
-
       const increaseProgress = () => {
         if (!generatingImages) {
           clearInterval(interval);
@@ -125,6 +123,8 @@ export default function PlaygroundPage() {
           setUploadProgressPercent((prev) => Math.min(prev + increment, 70));
         }
       };
+
+      let interval = undefined as undefined | NodeJS.Timeout;
 
       interval = setInterval(increaseProgress, 100);
 
@@ -289,8 +289,8 @@ export default function PlaygroundPage() {
 
   const handleGenerateImages = async () => {
     // Initialize the URL variable.
-    let url: string | undefined;
-    let masked_url: string | undefined;
+    let url = "";
+    let masked_url = "";
 
     // // Set initial states.
     clearImageLoadUI();
@@ -298,10 +298,10 @@ export default function PlaygroundPage() {
     // // Format the user's input.
     const formattedPrompt = formatPrompt(promptInput, selectedStyle);
 
-    masked_url = await generateMaskUrl();
+    masked_url = await generateMaskUrl()!;
 
     // // Get the URL for the image.
-    url = await getImageUrl();
+    url = await getImageUrl()!;
 
     // Initiate the image generation request.
     await requestImageGeneration(formattedPrompt, url, masked_url);
@@ -340,229 +340,227 @@ export default function PlaygroundPage() {
     <>
       <div className="h-screen rounded-[0.5rem] shadow md:flex">
         <div className="flex-1">
-        <div className="grid h-full items-stretch md:grid-cols-[330px_min-content_1fr] ">
-              <div className="grid p-8 pb-16 md:order-3 md:grid-rows-[min-content_1fr_min-content]">
-                <StudioToolbar
-                  disabled={!isSelectedImageFocused}
-                  selectedImageUrl={selectedImage.url}
-                />
-                <div
-                  className={`relative my-6 flex items-center justify-center space-x-4 rounded-lg border p-6 pt-10 ${
-                    lassoOn ? "cursor-crosshair" : ""
-                  }`}
-                >
-                  {((pastGenerations[generationIndex] as { url: string }[])
-                    .length === 0 &&
-                    !isSelectedImageFocused) ||
-                  !hideGeneratingImagesProgressBar ? (
-                    <div
-                      className={`align-center flex flex-col justify-center text-center text-sm text-dark-gray transition-opacity duration-1000 ${
-                        progress >= 100 ? "opacity-0" : ""
-                      }`}
-                    >
-                      {!hideGeneratingImagesProgressBar ? (
-                        <>
-                          <p className="mb-4">Generating images...</p>
-                          <Progress
-                            value={progress}
-                            className="mb-4 h-2 w-[300px] text-primary-pink"
-                          />
-                        </>
+          <div className="grid h-full items-stretch md:grid-cols-[330px_min-content_1fr] ">
+            <div className="grid p-8 pb-16 md:order-3 md:grid-rows-[min-content_1fr_min-content]">
+              <StudioToolbar
+                disabled={!isSelectedImageFocused}
+                selectedImageUrl={selectedImage.url}
+              />
+              <div
+                className={`relative my-6 flex items-center justify-center space-x-4 rounded-lg border p-6 pt-10 ${
+                  lassoOn ? "cursor-crosshair" : ""
+                }`}
+              >
+                {((pastGenerations[generationIndex] as { url: string }[])
+                  .length === 0 &&
+                  !isSelectedImageFocused) ||
+                !hideGeneratingImagesProgressBar ? (
+                  <div
+                    className={`align-center flex flex-col justify-center text-center text-sm text-dark-gray transition-opacity duration-1000 ${
+                      progress >= 100 ? "opacity-0" : ""
+                    }`}
+                  >
+                    {!hideGeneratingImagesProgressBar ? (
+                      <>
+                        <p className="mb-4">Generating images...</p>
+                        <Progress
+                          value={progress}
+                          className="mb-4 h-2 w-[300px] text-primary-pink"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <p>&#127912;</p>
+                        <p className="mb-4">
+                          Type in a prompt to generate your image
+                        </p>
+                      </>
+                    )}
+                  </div>
+                ) : isSelectedImageFocused ? (
+                  <>
+                    <div className={widthClass}>
+                      {!lassoOn ? (
+                        <Image
+                          width={110} // You can adjust or remove these if you're relying on container width
+                          height={110}
+                          src={selectedImage.url}
+                          className={`h-auto w-full  rounded-md`} // Ensure the image takes the full width of its container
+                          alt={"image"}
+                          objectFit="cover"
+                        />
                       ) : (
                         <>
-                          <p>&#127912;</p>
-                          <p className="mb-4">
-                            Type in a prompt to generate your image
-                          </p>
+                          <div className="h-full w-full select-none">
+                            <MaskedImage
+                              ref={maskedImageRef}
+                              src={selectedImage.url}
+                              objectFit="contain"
+                              setHasMask={setHasMask}
+                            />
+                          </div>
                         </>
                       )}
                     </div>
-                  ) : isSelectedImageFocused ? (
-                    <>
-                      <div className={widthClass}>
-                        {!lassoOn ? (
-                          <Image
-                            width={110} // You can adjust or remove these if you're relying on container width
-                            height={110}
-                            src={selectedImage.url}
-                            className={`h-auto w-full  rounded-md`} // Ensure the image takes the full width of its container
-                            alt={"image"}
-                            objectFit="cover"
-                          />
-                        ) : (
-                          <>
-                            <div className="h-full w-full select-none">
-                              <MaskedImage
-                                ref={maskedImageRef}
-                                src={selectedImage.url}
-                                objectFit="contain"
-                                setHasMask={setHasMask}
+                  </>
+                ) : (
+                  <>
+                    {(
+                      pastGenerations[generationIndex] as { url: string }[]
+                    ).map((photo, index) => (
+                      <div
+                        key={index}
+                        className={`${widthClass} ${"cursor-pointer"} relative duration-300 hover:scale-105`}
+                        onClick={() => selectedImageToEdit(photo.url)}
+                      >
+                        <TooltipProvider>
+                          <Tooltip delayDuration={0}>
+                            <TooltipTrigger className="aspect-square h-auto w-auto w-full object-cover">
+                              {" "}
+                              <Image
+                                width={110} // You can adjust or remove these if you're relying on container width
+                                height={110}
+                                onLoadingComplete={() =>
+                                  addLoadedImage(photo.url)
+                                }
+                                src={photo.url}
+                                className={`${
+                                  browserLoadedImages.has(photo.url)
+                                    ? "opacity-100 duration-1000"
+                                    : "opacity-0 duration-1000"
+                                }  h-auto  w-full rounded-md transition-all `} // Ensure the image takes the full width of its container
+                                alt={"image"}
+                                objectFit="cover"
                               />
-                            </div>
-                          </>
-                        )}
+                            </TooltipTrigger>
+                            {
+                              <TooltipContent>
+                                <p>Click to edit</p>
+                              </TooltipContent>
+                            }
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      {(
-                        pastGenerations[generationIndex] as { url: string }[]
-                      ).map((photo, index) => (
-                        <div
-                          key={index}
-                          className={`${widthClass} ${"cursor-pointer"} relative duration-300 hover:scale-105`}
-                          onClick={() => selectedImageToEdit(photo.url)}
-                        >
-                          <TooltipProvider>
-                            <Tooltip delayDuration={0}>
-                              <TooltipTrigger className="aspect-square h-auto w-auto w-full object-cover">
-                                {" "}
-                                <Image
-                                  width={110} // You can adjust or remove these if you're relying on container width
-                                  height={110}
-                                  onLoadingComplete={() =>
-                                    addLoadedImage(photo.url)
-                                  }
-                                  src={photo.url}
-                                  className={`${
-                                    browserLoadedImages.has(photo.url)
-                                      ? "opacity-100 duration-1000"
-                                      : "opacity-0 duration-1000"
-                                  }  h-auto  w-full rounded-md transition-all `} // Ensure the image takes the full width of its container
-                                  alt={"image"}
-                                  objectFit="cover"
-                                />
-                              </TooltipTrigger>
-                              {
-                                <TooltipContent>
-                                  <p>Click to edit</p>
-                                </TooltipContent>
-                              }
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                  <div
-                    className="absolute top-6 -translate-x-1/2 transform"
-                    style={{ left: "calc(50% - 20px)" }}
-                  >
-                    <div className="flex h-5 items-center space-x-4 text-sm">
-                      <Button
-                        variant="outline"
-                        disabled={!(generationIndex > 0)}
-                        onClick={previousGeneration}
-                        className="hidden h-8 w-8 p-0 lg:flex"
-                      >
-                        <ChevronLeftIcon className="h-4 w-4" />
-                      </Button>
+                    ))}
+                  </>
+                )}
+                <div
+                  className="absolute top-6 -translate-x-1/2 transform"
+                  style={{ left: "calc(50% - 20px)" }}
+                >
+                  <div className="flex h-5 items-center space-x-4 text-sm">
+                    <Button
+                      variant="outline"
+                      disabled={!(generationIndex > 0)}
+                      onClick={previousGeneration}
+                      className="hidden h-8 w-8 p-0 lg:flex"
+                    >
+                      <ChevronLeftIcon className="h-4 w-4" />
+                    </Button>
 
-                      <Button
-                        variant={null}
-                        disabled={lassoDisabled}
-                        onClick={() => setToggleLassoWrapper(!lassoOn)}
-                        className={`h-8 w-8 p-0 ${
-                          lassoOn
-                            ? "bg-primary-pink text-white hover:bg-opacity-70 hover:text-white"
-                            : "hover:bg-border"
-                        } border`}
-                      >
-                        <LassoSelect className="h-4 w-4" />
-                      </Button>
+                    <Button
+                      variant={null}
+                      disabled={lassoDisabled}
+                      onClick={() => setToggleLassoWrapper(!lassoOn)}
+                      className={`h-8 w-8 p-0 ${
+                        lassoOn
+                          ? "bg-primary-pink text-white hover:bg-opacity-70 hover:text-white"
+                          : "hover:bg-border"
+                      } border`}
+                    >
+                      <LassoSelect className="h-4 w-4" />
+                    </Button>
 
-                      <Button
-                        variant="outline"
-                        disabled={
-                          !(generationIndex < pastGenerations.length - 1)
-                        }
-                        onClick={nextGeneration}
-                        className="hidden h-8 w-8 p-0 lg:flex"
-                      >
-                        <ChevronRightIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div
-                    className="absolute top-6 transform"
-                    style={{ right: "calc(20px)" }}
-                  >
-                    {isSelectedImageFocused && (
-                      <div className="flex h-5 items-center space-x-4">
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            setIsSelectedImageFocused(false);
-                            setToggleLassoWrapper(false);
-                          }}
-                          className="lg:flex"
-                        >
-                          <X className="mr-2 h-4 w-4" />
-                          Cancel Edit
-                        </Button>
-                      </div>
-                    )}
+                    <Button
+                      variant="outline"
+                      disabled={!(generationIndex < pastGenerations.length - 1)}
+                      onClick={nextGeneration}
+                      className="hidden h-8 w-8 p-0 lg:flex"
+                    >
+                      <ChevronRightIcon className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-                <div className="mt-0 border-0 p-0">
-                  <div className="flex flex-col space-y-4">
-                    <div className="grid h-full gap-6 lg:grid-cols-1">
-                      <div className="flex flex-col space-y-4">
-                        <div className="flex flex-col space-y-2">
-                          <Label htmlFor="instructions">Prompt</Label>
-                          <div className="flex w-full items-center space-x-2">
-                            <div className="w-full">
-                              <TypingPlaceholderTextarea
-                                promptInput={promptInput}
-                                setPromptInput={setPromptInput}
-                                disabled={isPromptInputDisabled}
-                                placeholders={placeholders}
-                              />
-                            </div>
-
-                            <TooltipProvider>
-                              <Tooltip delayDuration={0}>
-                                <TooltipTrigger className="h-full" asChild>
-                                  <Button
-                                    type="submit"
-                                    className="primary-button h-full w-[90px]"
-                                    disabled={isPromptButtonDisabled}
-                                    onClick={handleGenerateImages}
-                                  >
-                                    {!hideGeneratingImagesProgressBar ? (
-                                      <ButtonSpinner size={2} />
-                                    ) : (
-                                      <Wand2 size={30} />
-                                    )}
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Generate images</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                <div
+                  className="absolute top-6 transform"
+                  style={{ right: "calc(20px)" }}
+                >
+                  {isSelectedImageFocused && (
+                    <div className="flex h-5 items-center space-x-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setIsSelectedImageFocused(false);
+                          setToggleLassoWrapper(false);
+                        }}
+                        className="lg:flex"
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel Edit
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-0 border-0 p-0">
+                <div className="flex flex-col space-y-4">
+                  <div className="grid h-full gap-6 lg:grid-cols-1">
+                    <div className="flex flex-col space-y-4">
+                      <div className="flex flex-col space-y-2">
+                        <Label htmlFor="instructions">Prompt</Label>
+                        <div className="flex w-full items-center space-x-2">
+                          <div className="w-full">
+                            <TypingPlaceholderTextarea
+                              promptInput={promptInput}
+                              setPromptInput={setPromptInput}
+                              disabled={isPromptInputDisabled}
+                              placeholders={placeholders}
+                            />
                           </div>
+
+                          <TooltipProvider>
+                            <Tooltip delayDuration={0}>
+                              <TooltipTrigger className="h-full" asChild>
+                                <Button
+                                  type="submit"
+                                  className="primary-button h-full w-[90px]"
+                                  disabled={isPromptButtonDisabled}
+                                  onClick={handleGenerateImages}
+                                >
+                                  {!hideGeneratingImagesProgressBar ? (
+                                    <ButtonSpinner size={2} />
+                                  ) : (
+                                    <Wand2 size={30} />
+                                  )}
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Generate images</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <Separator orientation="vertical" className="md:order-2" />
-              <StudioConfig
-                selectedStyle={selectedStyle}
-                setSelectedStyle={setSelectedStyle}
-                imageCount={imageCount}
-                setImageCount={setImageCount}
-                selectedImage={selectedImage}
-                onImageChange={onImageChange}
-                loadingInspoImage={loadingInspoImage}
-                setLoadingInspoImage={setLoadingInspoImage}
-                isSelectedImageFocused={isSelectedImageFocused}
-                setIsSelectedImageFocused={setIsSelectedImageFocused}
-                clearSelectedImage={clearSelectedImage}
-              />
             </div>
+            <Separator orientation="vertical" className="md:order-2" />
+            <StudioConfig
+              selectedStyle={selectedStyle}
+              setSelectedStyle={setSelectedStyle}
+              imageCount={imageCount}
+              setImageCount={setImageCount}
+              selectedImage={selectedImage}
+              onImageChange={onImageChange}
+              loadingInspoImage={loadingInspoImage}
+              setLoadingInspoImage={setLoadingInspoImage}
+              isSelectedImageFocused={isSelectedImageFocused}
+              setIsSelectedImageFocused={setIsSelectedImageFocused}
+              clearSelectedImage={clearSelectedImage}
+            />
+          </div>
         </div>
       </div>
     </>
