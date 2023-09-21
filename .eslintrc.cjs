@@ -8,7 +8,6 @@ const config = {
   extends: [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked",
   ],
   rules: {
     // These opinionated rules are enabled in stylistic-type-checked above.
@@ -20,6 +19,7 @@ const config = {
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/await-thenable": "off",
+    "@typescript-eslint/no-non-null-assertion": "error",
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {

@@ -33,7 +33,7 @@ export function MaxLengthSelector({ value, setValue }: MaxLengthSelectorProps) {
               defaultValue={[value]}
               step={1}
               min={1}
-              onValueChange={(num_ar) => setValue(num_ar[0]! ?? 1)}
+              onValueChange={(num_ar) => setValue((num_ar[0] as number) ?? 1)}
               className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
               aria-label="Maximum Length"
             />

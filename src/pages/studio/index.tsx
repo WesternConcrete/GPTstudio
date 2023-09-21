@@ -34,6 +34,7 @@ import {
   type MaskedImageHandles,
   MaskedImage,
 } from "../../components/studio/masked-image";
+import { type UploadFileResponse } from "uploadthing/client";
 
 export default function PlaygroundPage() {
   const placeholders = [
@@ -250,8 +251,10 @@ export default function PlaygroundPage() {
    */
   const getImageUrl = async (): Promise<string | undefined> => {
     if (selectedImage.file && selectedImage.url) {
-      const uploadFileResponse = await startUpload([selectedImage.file])!;
-      return uploadFileResponse![0]!.url;
+      const uploadFileResponse = (await startUpload([
+        selectedImage.file,
+      ])) as UploadFileResponse[];
+      return (uploadFileResponse[0] as UploadFileResponse).url;
     } else if (!selectedImage.file && selectedImage.url) {
       const url = await saveDalleUrlMutation.mutateAsync({
         url: selectedImage.url,
@@ -278,8 +281,10 @@ export default function PlaygroundPage() {
       const maskFile = new File([maskBlob], "mask.png", { type: "image/png" });
 
       if (maskFile) {
-        const uploadFileResponse = await startUpload([maskFile])!;
-        return uploadFileResponse![0]!.url;
+        const uploadFileResponse = (await startUpload([
+          maskFile,
+        ])) as UploadFileResponse[];
+        return (uploadFileResponse[0] as UploadFileResponse).url;
       } else {
         return undefined;
       }
@@ -298,10 +303,10 @@ export default function PlaygroundPage() {
     // // Format the user's input.
     const formattedPrompt = formatPrompt(promptInput, selectedStyle);
 
-    masked_url = await generateMaskUrl()!;
+    masked_url = (await generateMaskUrl()) as string;
 
     // // Get the URL for the image.
-    url = await getImageUrl()!;
+    url = (await getImageUrl()) as string;
 
     // Initiate the image generation request.
     await requestImageGeneration(formattedPrompt, url, masked_url);

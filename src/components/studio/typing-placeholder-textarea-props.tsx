@@ -26,7 +26,7 @@ const TypingPlaceholderTextarea: React.FC<TypingPlaceholderTextareaProps> = ({
       const nextIndex = (placeholderIndex + 1) % placeholders.length;
       setPlaceholderIndex(nextIndex);
 
-      const text = placeholders[nextIndex]!;
+      const text = placeholders[nextIndex] as string;
       for (let i = 0; i <= text.length; i++) {
         setTimeout(() => {
           setCurrentPlaceholder(text.slice(0, i));
