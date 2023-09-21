@@ -12,8 +12,8 @@ export default authMiddleware({
       const home = new URL("/", req.url);
       return NextResponse.redirect(home);
     } else if (auth.userId && auth.isPublicRoute) {
-      const dashboard = new URL("/dashboard", req.url);
-      return NextResponse.redirect(dashboard);
+      const design_studio = new URL("/studio", req.url);
+      return NextResponse.redirect(design_studio);
     }
   },
 });

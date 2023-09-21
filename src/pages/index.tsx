@@ -9,7 +9,7 @@ export default function LandingPage() {
         <title>GTPstudio</title>
       </Head>
       <div className="relative isolate px-6 lg:px-8">
-        <div className="sm:pt-18 lg:pt-18 mx-auto max-w-2xl pt-20">
+        <div className="mx-auto max-w-2xl pt-[10%]">
           <div className="background-gradient landing-page flex w-full flex-1 flex-col items-center justify-center px-4 text-center">
             <div
               style={{ animation: "fadeInFromTop .8s forwards" }}
