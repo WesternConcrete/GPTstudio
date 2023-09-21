@@ -23,7 +23,7 @@ interface NavigationItem {
 }
 
 const NAVIGATION_OPTIONS: NavigationItem[] = [
-  { name: "Dashboard", href: "/dashboard", icon: <></> },
+  { name: "Studio", href: "/studio", icon: <></> },
   { name: "Marketplace", href: "/marketplace", icon: <></> },
 ];
 
