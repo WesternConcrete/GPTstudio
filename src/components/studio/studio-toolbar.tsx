@@ -74,11 +74,7 @@ export default function StudioConfig({
             />
           </div>
           <DialogFooter>
-            <Button
-              type="submit"
-              className="primary-button"
-              disabled={true}
-            >
+            <Button type="submit" className="primary-button" disabled={true}>
               Save
               <Lock className="icon-margin ml-3 h-4 w-4 shrink-0" />
             </Button>
@@ -91,7 +87,6 @@ export default function StudioConfig({
           <Button className="primary-button" disabled={disabled}>
             Publish
             <Printer className="icon-margin ml-3 h-4 w-4 shrink-0" />
-            
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[475px]">
@@ -129,11 +124,7 @@ export default function StudioConfig({
             />
           </div>
           <DialogFooter>
-            <Button
-              type="submit"
-              className="primary-button"
-              disabled={true}
-            >
+            <Button type="submit" className="primary-button" disabled={true}>
               Publish
               <Lock className="icon-margin ml-3 h-4 w-4 shrink-0" />
             </Button>

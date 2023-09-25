@@ -1,10 +1,6 @@
 import { type AppType } from "next/app";
 import { api } from "@/utils/api";
-import {
-  ClerkLoaded,
-  ClerkLoading,
-  ClerkProvider,
-} from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import { Layout } from "@/components/layout";
 import "@/styles/globals.css";
 import { LoadingPage } from "@/components/loading/loading-page";

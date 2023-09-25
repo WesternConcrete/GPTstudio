@@ -34,7 +34,7 @@ export default function FileLayout({
     const currentTab = router.asPath.split("/").pop() as string;
     const newUrl = currentUrl.replace(`/${currentTab}`, fragment);
     return newUrl;
-  }
+  };
 
   const [tabValue, setTabValue] = useState(() => {
     const matchedTab = tabs.find((tab) =>

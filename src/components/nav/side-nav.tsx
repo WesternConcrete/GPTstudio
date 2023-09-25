@@ -37,7 +37,7 @@ interface NavigationItem {
   name: string;
   href: string;
   icon: LucideIcon;
-  disabled: boolean,
+  disabled: boolean;
 }
 
 interface SideNavProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -46,9 +46,14 @@ interface SideNavProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const NAVIGATION_OPTIONS: NavigationItem[] = [
-  { name: "Design Studio", href: "studio", icon: PaintBucket, disabled: false, },
-  { name: "My Gallery", href: "gallery", icon: LayoutDashboard, disabled: true, },
-  { name: "Marketplace", href: "marketplace", icon: Store, disabled: true, },
+  { name: "Design Studio", href: "studio", icon: PaintBucket, disabled: false },
+  {
+    name: "My Gallery",
+    href: "gallery",
+    icon: LayoutDashboard,
+    disabled: true,
+  },
+  { name: "Marketplace", href: "marketplace", icon: Store, disabled: true },
 ];
 
 export function SideNav({
@@ -115,7 +120,9 @@ export function SideNav({
                       >
                         <option.icon className={`h-5 w-5`} />
                         {!isCollapsed ? <span>{option.name}</span> : null}
-                        {!isCollapsed && option.disabled && <Lock className={`h-4 w-4`}/>} 
+                        {!isCollapsed && option.disabled && (
+                          <Lock className={`h-4 w-4`} />
+                        )}
                       </Button>
                     </TooltipTrigger>
 

@@ -1,2 +1,5 @@
-export interface TabLayoutNavigationItem { title: string, value: string, urlFragment: string }
-
+export interface TabLayoutNavigationItem {
+  title: string;
+  value: string;
+  urlFragment: string;
+}
