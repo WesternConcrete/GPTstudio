@@ -346,7 +346,7 @@ export default function PlaygroundPage() {
       <div className="h-screen rounded-[0.5rem] shadow md:flex">
         <div className="flex-1">
           <div className="grid h-full items-stretch md:grid-cols-[330px_min-content_1fr] ">
-            <div className="grid p-8 pb-16 md:order-3 md:grid-rows-[min-content_1fr_min-content]">
+            <div className="grid p-10 pb-16 md:order-3 md:grid-rows-[min-content_1fr_min-content]">
               <StudioToolbar
                 disabled={!isSelectedImageFocused}
                 selectedImageUrl={selectedImage.url}

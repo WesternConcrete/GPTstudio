@@ -4,19 +4,12 @@ import {
   ClerkLoaded,
   ClerkLoading,
   ClerkProvider,
-  RedirectToSignIn,
-  SignedIn,
-  SignedOut,
-  useUser,
 } from "@clerk/nextjs";
 import { Layout } from "@/components/layout";
 import "@/styles/globals.css";
 import { LoadingPage } from "@/components/loading/loading-page";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "next-themes";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import "react-mask-editor/dist/style.css";
 
 export const metadata = {
   title: "GPTstudio",

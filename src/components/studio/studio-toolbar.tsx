@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Printer, Save } from "lucide-react";
+import { Lock, Printer, Save } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -77,9 +77,10 @@ export default function StudioConfig({
             <Button
               type="submit"
               className="primary-button"
-              disabled={disableSave}
+              disabled={true}
             >
               Save
+              <Lock className="icon-margin ml-3 h-4 w-4 shrink-0" />
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -90,6 +91,7 @@ export default function StudioConfig({
           <Button className="primary-button" disabled={disabled}>
             Publish
             <Printer className="icon-margin ml-3 h-4 w-4 shrink-0" />
+            
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[475px]">
@@ -130,9 +132,10 @@ export default function StudioConfig({
             <Button
               type="submit"
               className="primary-button"
-              disabled={disableSave}
+              disabled={true}
             >
               Publish
+              <Lock className="icon-margin ml-3 h-4 w-4 shrink-0" />
             </Button>
           </DialogFooter>
         </DialogContent>

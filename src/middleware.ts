@@ -15,6 +15,11 @@ export default authMiddleware({
       const design_studio = new URL("/studio", req.url);
       return NextResponse.redirect(design_studio);
     }
+
+    if(req.url.includes('gallery') || req.url.includes('marketplace')) {
+      const studio = new URL("/studio", req.url);
+      return NextResponse.redirect(studio);
+    }
   },
 });
 

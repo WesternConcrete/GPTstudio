@@ -28,19 +28,25 @@ export default function FileLayout({
 }: Props) {
   const router = useRouter();
 
-  const constructUrl = (fragment: string) => `${router.pathname}${fragment}`;
+  const constructUrl = (fragment: string) => {
+    //take the current tab value and split off the end. add the new fragment to the end
+    const currentUrl = router.pathname;
+    const currentTab = router.asPath.split("/").pop() as string;
+    const newUrl = currentUrl.replace(`/${currentTab}`, fragment);
+    return newUrl;
+  }
 
   const [tabValue, setTabValue] = useState(() => {
     const matchedTab = tabs.find((tab) =>
       router.asPath.includes(tab.urlFragment)
     );
-    return matchedTab?.value || tabs[0]?.value;
+    return matchedTab?.value ?? tabs[0]?.value;
   });
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
       const matchedTab = tabs.find((tab) => url.includes(tab.urlFragment));
-      setTabValue(matchedTab?.value || tabs[0]?.value);
+      setTabValue(matchedTab?.value ?? tabs[0]?.value);
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
@@ -50,7 +56,7 @@ export default function FileLayout({
   }, [router, tabs]);
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4 p-8 pt-10">
       <div className="flex items-center justify-between space-y-2">
         <div className="flex flex-col gap-2">
           {backButtonUrl && (
